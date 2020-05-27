@@ -69,5 +69,6 @@ class MagicClient:
         return element
 
     def post_element_body(self, element_id: str, element_body: dict):
-        # post_element_url = f"{self.get_project_url}/branches/{self.first_branch}/revisions/{self.last_revision}/elements/{element_id}"
-        pass
+        post_element_url = f"{self.get_project_url}/branches/{self.first_branch}/revisions/{self.last_revision}/elements/{element_id}"
+        resp = self.session.get(post_element_url, json=element_body, verify=False)
+        print("Post new element: %s", resp)

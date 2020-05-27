@@ -10,7 +10,7 @@ class MagicModel:
         self.main_structure = {}
         self._init_main_structure()
 
-    def get_element(self, element_name: str):
+    def get_first_structure_level(self, element_name: str):
         return self.main_structure[element_name]
 
     def change_element(self, element_name: str, ):
@@ -48,6 +48,7 @@ class MagicModel:
 
             if "kerml:name" in unit[1]:
                 unit_name = unit[1]["kerml:name"]
-                element_structure[unit_name] = [unit_id, unit]
+                if unit_name:
+                    element_structure[unit_name] = [unit_id, unit]
 
         return element_structure
