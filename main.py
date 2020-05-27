@@ -12,23 +12,25 @@ if not sys.warnoptions:
     warnings.simplefilter("ignore")
 
 
+def print_structure(element_name: str, element_structure: dict):
+    print(f"The structure of the {element_name}:")
+    for key in element_structure.keys():
+        print(key)
+    print("---------------------------------- \n")
+
+
 magic_client = MagicClient(username=username, pwd=password, twc_address=twc_address)
 model = MagicModel(magic_client)
 
-# main_structure[element_name] = [element_id, element]
 model_structure = model.get_main_structure()
+# -> main_structure[element_name] = [element_id, element]
 
-print("The main structure of the model:")
-for key in model_structure.keys():
-    print(key)
+print_structure("the model", model_structure)
 
-# let`s take
+# let`s take "6 - Верификация требований" element
+element_6_name = "6 - Верификация требований"
+element_6 = model_structure[element_6_name][1]
+element_6_structure = model.get_owned_elements(element_6)
+# -> structure[element_name] = [element_id, element]
 
-
-# magic_client.get_model_id()
-
-# element_name = ""
-# element = model.get_element(element_name)
-# print(element)
-
-# model.change_element(...)
+print_structure(element_6_name, element_6_structure)

@@ -39,5 +39,15 @@ class MagicModel:
         #     with open(FILE_NAME, 'w', encoding="utf8") as f:
         #         f.write(json.dumps(self.model_dict))
 
-    def get_owned_elements(self, element_body: dict):
-        pass
+    def get_owned_elements(self, element: dict):
+        element_structure = {}
+
+        for unit in element[1]["kerml:ownedElement"]:
+            unit_id = unit["@id"]
+            unit = self.magic_client.get_element_body(unit_id)
+
+            if "kerml:name" in unit[1]:
+                unit_name = unit[1]["kerml:name"]
+                element_structure[unit_name] = [unit_id, unit]
+
+        return element_structure
