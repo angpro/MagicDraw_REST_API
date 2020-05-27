@@ -1,11 +1,14 @@
 import requests
 import json
+
+from model_data import username, password, project_url
 import sys
 
 # Running code :
 #   import pyMagic
 #  a = pyMagic.pyMagic('dd', 'ff', 'ff')
 #  a.info
+
 
 class pyMagic:
     # Class to hold methods to interface with MagicDraw model
@@ -16,11 +19,11 @@ class pyMagic:
     # project_url is where all branches and revisions of the project are located
     # model_url is pointing to the latest version of the model
 
-    def __init__(self, project_url, username, password):
+    def __init__(self):
         self.project_url = project_url
         # These two have to be hidden to the outside
-        self.username = username;
-        self.password = password;
+        self.username = username
+        self.password = password
 
         # Also useful to suppress useless warnings
         if not sys.warnoptions:
@@ -38,12 +41,13 @@ class pyMagic:
         # Initialization: get a session running
         # There is a timeout on connection, so it is better to have a new session before each request
         self.session = requests.Session()
+        self.session.auth = (self.username, self.password)
         self.session.get(self.project_url, verify=False)
-        self.session.auth=(self.username, self.password)
         #
-        print(self.project_url + '/branches'  )
+        print(self.project_url + '/branches')
         try:
-            branches_ptr  = json.loads(self.session.get(self.project_url + '/branches').text)
+            # branches_ptr = json.loads(self.session.get(self.project_url + '/branches').text)
+            branches_ptr = self.session.get(self.project_url + '/branches').json()
         except json.decoder.JSONDecodeError:
             print(" JSONDecodeError")
             print( self.session.get(self.project_url + '/branches').text )
@@ -62,7 +66,7 @@ class pyMagic:
              self.project_url + '/branches/' + self.first_branch +
              '/revisions/' + str(self.last_rev) ).text)
 
-        self.model_uuid = last_rev[0]['rootObjectIDs'][0];
+        self.model_uuid = last_rev[0]['rootObjectIDs'][0]
 
         model_dir= {'base': '0xxdf'}
 
@@ -94,34 +98,35 @@ class pyMagic:
         print(self.last_rev, self.first_branch)
 
     def get_element(self, element_id):
-        model_element = json.loads(session.get(
+        model_element = json.loads(self.session.get(
             self.project_url + '/branches/' + self.first_branch +
             '/revisions/' + self.last_rev + '/elements/' + element_id).text)
 
-    def model_traverse( self, model_base ):
-        for m in model_base[0]['ldp:contains']  :
-            model_element_uuid = m['@id']
-            model_element_uuid
-            model_element = get_element( model_element_uuid )
-            # print( model_element_uuid, list(model_element[1]) )
-            if 'kerml:name' in list(model_element[1]): print( model_element_uuid, model_element[1]['kerml:name'])
-            element_traverse( model_element )
+    def model_traverse(self, model_base):
+        print("TEST")
+        print(model_base)
+        print(model_base[1])
+
+        # for m in model_base[0]['ldp:contains']:
+        #     model_element_uuid = m['@id']
+        #     model_element = self.get_element( model_element_uuid )
+        #     # print( model_element_uuid, list(model_element[1]) )
+        #     if 'kerml:name' in list(model_element[1]): print( model_element_uuid, model_element[1]['kerml:name'])
+        #     # element_traverse( model_element )
+
 
 if __name__ == "__main__":
     import sys
-    import pyMagic
+    # import pyMagic
 
     # In principle logic is like this:
     #    We have an element in the model named "Status" with certain values
     #    We have to locate it inside: workspace / model / revision of the model / find in the tree
     #    Find UUID of the element / change it to whatever we want.
 
-    file1 = open("/Users/aivanov/Documents/Projects/EVOLVE/Поля/fromLuzi.txt","r")
-    creds = file1.readlines()
-    file1.close()
     # TODO: Find proejct in the workspaces by name.
 
-    model = pyMagic.pyMagic('https://10.30.254.66:8111/osmc/workspaces/4d6ce495-1273-452c-a548-36fcd922184e/resources/1f4b1466-698e-4365-886b-1401c7d0bbeb', creds[0].rstrip("\n"), creds[1].rstrip("\n"))
+    model = pyMagic()
 
     # print( model.username )
     model.connect('Swarm_CubeSat_Project')
