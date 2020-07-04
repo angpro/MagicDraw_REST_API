@@ -8,6 +8,7 @@ class MagicModel:
     def __init__(self, magic_client: MagicClient):
         self.magic_client = magic_client
         self.main_structure = {}
+        self.uml_Package_url = None
         self._init_main_structure()
 
     def get_first_structure_level(self, element_name: str):
@@ -31,9 +32,10 @@ class MagicModel:
             element_id = unit["@id"]
             element = self.magic_client.get_element_body(element_id)
 
-            if "kerml:name" in element[1]:
+            if "kerml:name" in element[1] and element[1]["kerml:name"] == 'Test_folder':
                 element_name = element[1]["kerml:name"]
                 self.main_structure[element_name] = [element_id, element]
+                self.uml_Package_url = element[1]['@context']['uml:Package']
 
         # if self.model_dict:
         #     with open(FILE_NAME, 'w', encoding="utf8") as f:

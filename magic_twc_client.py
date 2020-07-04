@@ -1,5 +1,7 @@
 import requests
 
+import json
+
 
 class MagicClient:
     def __init__(self, username: str, pwd: str, twc_address: str):
@@ -11,9 +13,10 @@ class MagicClient:
         # TODO: add option to select workspace by name
         self.workspace_id = "4d6ce495-1273-452c-a548-36fcd922184e"
 
-        # use it by default "Swarm CubeSat" project
+        # use it by default "Test_Magic_API" 04deb4d0-a511-49a7-99a4-a25a6055e88d
+        # "Swarm CubeSat" project 1f4b1466-698e-4365-886b-1401c7d0bbeb
         # TODO: add option to select project by name
-        self.project_id = "1f4b1466-698e-4365-886b-1401c7d0bbeb"
+        self.project_id = "04deb4d0-a511-49a7-99a4-a25a6055e88d"
 
         self.last_revision = ""
         self.first_branch = ""
@@ -68,7 +71,12 @@ class MagicClient:
         element = self.session.get(get_element_url, verify=False).json()
         return element
 
-    def post_element_body(self, element_id: str, element_body: dict):
+    def put_element_body(self, element_id: str, element_body: dict):
         post_element_url = f"{self.get_project_url}/branches/{self.first_branch}/revisions/{self.last_revision}/elements/{element_id}"
-        resp = self.session.get(post_element_url, json=element_body, verify=False)
-        print("Post new element: %s", resp)
+        # post_element_url = f"{self.get_project_url}/branches/{self.first_branch}/revisions/{self.last_revision}/elements/{element_id}"
+        element_body = json.dumps(element_body)
+        print(element_body)
+        # resp = self.session.post(post_element_url, json=element_body, verify=False) # Response [405]
+        resp = self.session.put(post_element_url, data=element_body, verify=False)  # Response [415]
+        # resp = self.session.patch(post_element_url, data=element_body, verify=False)  # Response [415]
+        print("Post new element: ", resp)
