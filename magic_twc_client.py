@@ -73,10 +73,9 @@ class MagicClient:
 
     def put_element_body(self, element_id: str, element_body: dict):
         post_element_url = f"{self.get_project_url}/branches/{self.first_branch}/revisions/{self.last_revision}/elements/{element_id}"
-        # post_element_url = f"{self.get_project_url}/branches/{self.first_branch}/revisions/{self.last_revision}/elements/{element_id}"
-        element_body = json.dumps(element_body)
         print(element_body)
+        headers = {'Content-type': 'application/ld+json'}
         # resp = self.session.post(post_element_url, json=element_body, verify=False) # Response [405]
-        resp = self.session.put(post_element_url, data=element_body, verify=False)  # Response [415]
         # resp = self.session.patch(post_element_url, data=element_body, verify=False)  # Response [415]
+        resp = self.session.put(post_element_url, data=json.dumps(element_body), headers=headers, verify=False)  # Response [415]
         print("Post new element: ", resp)
